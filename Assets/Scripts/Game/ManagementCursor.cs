@@ -11,6 +11,9 @@ public class ManagementCursor : MonoBehaviour
     [SerializeField] private InputActionReference rotateAction;
     [SerializeField] private InputActionReference toggleTimeAction;
 
+    [Header("Game")]
+    [SerializeField] private GameManager gameManager;
+
     [Header("Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 100f;
@@ -70,9 +73,15 @@ public class ManagementCursor : MonoBehaviour
         if (Mathf.Abs(input) < 0.01f)
             return;
 
-        float newScale = transform.localScale.x + input * zoomSpeed * Time.deltaTime;
+        float newScale =
+            transform.localScale.x +
+            input * zoomSpeed * Time.deltaTime;
 
-        newScale = Mathf.Clamp(newScale, minScale, maxScale);
+        newScale = Mathf.Clamp(
+            newScale,
+            minScale,
+            maxScale
+        );
 
         transform.localScale = Vector3.one * newScale;
     }
@@ -112,5 +121,20 @@ public class ManagementCursor : MonoBehaviour
     private void OnToggleTime(InputAction.CallbackContext context)
     {
         Debug.Log("Action: Time Paused/Resumed");
+
+        if (gameManager == null)
+        {
+            Debug.LogError("GameManager is not assigned in ManagementCursor!");
+            return;
+        }
+
+        if (gameManager.CurrentState == GameState.Gameplay)
+        {
+            gameManager.ChangeState(GameState.Paused);
+        }
+        else if (gameManager.CurrentState == GameState.Paused)
+        {
+            gameManager.ChangeState(GameState.Gameplay);
+        }
     }
 }

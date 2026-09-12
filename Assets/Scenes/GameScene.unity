@@ -1223,6 +1223,7 @@ MonoBehaviour:
   cancelAction: {fileID: -2592690249815572290, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   rotateAction: {fileID: -282575651987536330, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   toggleTimeAction: {fileID: -1696231985799946697, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  gameManager: {fileID: 724214069}
   moveSpeed: 5
   rotationSpeed: 100
   zoomSpeed: 1
