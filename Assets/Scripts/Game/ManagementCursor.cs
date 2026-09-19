@@ -5,29 +5,30 @@ public class ManagementCursor : MonoBehaviour
 {
     [Header("Input Actions")]
     [SerializeField] private InputActionReference moveAction;
-    [SerializeField] private InputActionReference zoomAction;
     [SerializeField] private InputActionReference selectAction;
     [SerializeField] private InputActionReference cancelAction;
-    [SerializeField] private InputActionReference rotateAction;
     [SerializeField] private InputActionReference toggleTimeAction;
+
+    [Header("Settings")]
+    [SerializeField] private float moveSpeed = 5f;
 
     [Header("Game")]
     [SerializeField] private GameManager gameManager;
 
-    [Header("Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 100f;
-    [SerializeField] private float zoomSpeed = 1f;
-    [SerializeField] private float minScale = 0.5f;
-    [SerializeField] private float maxScale = 3f;
+    private void Awake()
+    {
+        if (gameManager == null)
+        {
+            gameManager = FindFirstObjectByType<GameManager>();
+        }
+    }
+
 
     private void OnEnable()
     {
         moveAction.action.Enable();
-        zoomAction.action.Enable();
         selectAction.action.Enable();
         cancelAction.action.Enable();
-        rotateAction.action.Enable();
         toggleTimeAction.action.Enable();
 
         selectAction.action.performed += OnSelect;
@@ -42,18 +43,14 @@ public class ManagementCursor : MonoBehaviour
         toggleTimeAction.action.performed -= OnToggleTime;
 
         moveAction.action.Disable();
-        zoomAction.action.Disable();
         selectAction.action.Disable();
         cancelAction.action.Disable();
-        rotateAction.action.Disable();
         toggleTimeAction.action.Disable();
     }
 
     private void Update()
     {
         HandleMove();
-        HandleZoom();
-        HandleRotation();
         HandleRawInput();
     }
 
@@ -64,36 +61,6 @@ public class ManagementCursor : MonoBehaviour
         Vector3 movement = new Vector3(input.x, 0f, input.y);
 
         transform.position += movement * moveSpeed * Time.deltaTime;
-    }
-
-    private void HandleZoom()
-    {
-        float input = zoomAction.action.ReadValue<float>();
-
-        if (Mathf.Abs(input) < 0.01f)
-            return;
-
-        float newScale =
-            transform.localScale.x +
-            input * zoomSpeed * Time.deltaTime;
-
-        newScale = Mathf.Clamp(
-            newScale,
-            minScale,
-            maxScale
-        );
-
-        transform.localScale = Vector3.one * newScale;
-    }
-
-    private void HandleRotation()
-    {
-        float input = rotateAction.action.ReadValue<float>();
-
-        transform.Rotate(
-            Vector3.up,
-            input * rotationSpeed * Time.deltaTime
-        );
     }
 
     private void HandleRawInput()
