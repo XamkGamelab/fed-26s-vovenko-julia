@@ -24,7 +24,8 @@ public class GameManager : MonoBehaviour
             StartSimulation();
         }
 
-        if (previousState == GameState.Gameplay &&
+        if ((previousState == GameState.Gameplay ||
+             previousState == GameState.Paused) &&
             newState == GameState.MainMenu)
         {
             StopSimulation();

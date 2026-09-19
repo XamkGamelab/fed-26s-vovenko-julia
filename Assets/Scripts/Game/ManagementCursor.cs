@@ -11,9 +11,15 @@ public class ManagementCursor : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float minX = -20f;
+    [SerializeField] private float maxX = 20f;
+    [SerializeField] private float minZ = -20f;
+    [SerializeField] private float maxZ = 20f;
 
     [Header("Game")]
     [SerializeField] private GameManager gameManager;
+
+    private Vector3 startPosition;
 
     private void Awake()
     {
@@ -23,6 +29,10 @@ public class ManagementCursor : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
 
     private void OnEnable()
     {
@@ -60,7 +70,22 @@ public class ManagementCursor : MonoBehaviour
 
         Vector3 movement = new Vector3(input.x, 0f, input.y);
 
-        transform.position += movement * moveSpeed * Time.deltaTime;
+        Vector3 newPosition =
+            transform.position + movement * moveSpeed * Time.deltaTime;
+
+        newPosition.x = Mathf.Clamp(
+            newPosition.x,
+            startPosition.x + minX,
+            startPosition.x + maxX
+        );
+
+        newPosition.z = Mathf.Clamp(
+            newPosition.z,
+            startPosition.z + minZ,
+            startPosition.z + maxZ
+        );
+
+        transform.position = newPosition;
     }
 
     private void HandleRawInput()
@@ -83,6 +108,14 @@ public class ManagementCursor : MonoBehaviour
     private void OnCancel(InputAction.CallbackContext context)
     {
         Debug.Log("Action: Cancel / Back called");
+
+        if (gameManager == null)
+            return;
+
+        if (gameManager.CurrentState == GameState.Paused)
+        {
+            gameManager.ChangeState(GameState.MainMenu);
+        }
     }
 
     private void OnToggleTime(InputAction.CallbackContext context)
