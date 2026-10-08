@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50c996b8406b07b4d8a096db6c1ff74a, type: 3}
+  m_Name: WoodcutterData
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingData
+  Type: 0
+  Size: {x: 1, y: 1}
+  BuildTime: 1
+  CostType: 0
+  Cost: 5
+  ProducedResource: 0
+  ProductionAmount: 1
+  ProductionInterval: 2
+  Prefab: {fileID: 5786235827371803478, guid: 08c3a73913a03f54090447b6ece5ffaf, type: 3}

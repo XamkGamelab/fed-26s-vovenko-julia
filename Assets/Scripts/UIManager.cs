@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using TMPro;
 
 public enum UIPanel
 {
@@ -20,14 +21,37 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private UIPanelReference[] panels;
 
+
+    [Header("Resource Display")]
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text stoneText;
+
     private void OnEnable()
     {
         GameEventSystem.OnGameStateChanged += HandleGameStateChanged;
+        GameEventSystem.OnResourcesChanged += HandleResourcesChanged;
     }
-
     private void OnDisable()
     {
         GameEventSystem.OnGameStateChanged -= HandleGameStateChanged;
+        GameEventSystem.OnResourcesChanged -= HandleResourcesChanged;
+    }
+
+
+    private void HandleResourcesChanged(ResourceType type, int amount)
+    {
+        switch (type)
+        {
+            case ResourceType.Wood:
+                if (woodText != null)
+                    woodText.text = $"Wood: {amount}";
+                break;
+
+            case ResourceType.Stone:
+                if (stoneText != null)
+                    stoneText.text = $"Stone: {amount}";
+                break;
+        }
     }
 
     private void HandleGameStateChanged(GameState newState)
@@ -42,6 +66,7 @@ public class UIManager : MonoBehaviour
 
             case GameState.Gameplay:
                 ShowPanel(UIPanel.HUD);
+                RefreshResources();
                 break;
 
             case GameState.Paused:
@@ -59,4 +84,25 @@ public class UIManager : MonoBehaviour
             );
         }
     }
+
+
+    private void RefreshResources()
+    {
+        SimulationManager simulation =
+            FindAnyObjectByType<SimulationManager>();
+
+        if (simulation == null || simulation.Resources == null)
+            return;
+
+        HandleResourcesChanged(
+            ResourceType.Wood,
+            simulation.Resources.GetAmount(ResourceType.Wood)
+        );
+
+        HandleResourcesChanged(
+            ResourceType.Stone,
+            simulation.Resources.GetAmount(ResourceType.Stone)
+        );
+    }
+
 }

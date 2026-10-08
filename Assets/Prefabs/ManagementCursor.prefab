@@ -126,14 +126,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ManagementCursor
   moveAction: {fileID: 1344558780832781692, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  zoomAction: {fileID: -8347321713159396120, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   selectAction: {fileID: -1152403615198392648, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   cancelAction: {fileID: -2592690249815572290, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  rotateAction: {fileID: -282575651987536330, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   toggleTimeAction: {fileID: -1696231985799946697, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  gameManager: {fileID: 0}
   moveSpeed: 5
-  rotationSpeed: 100
-  zoomSpeed: 1
-  minScale: 0.5
-  maxScale: 3
+  minX: -20
+  maxX: 20
+  minZ: -20
+  maxZ: 20
+  gameManager: {fileID: 0}
+  woodcutterData: {fileID: 11400000, guid: 3ef73053096b90f47aed0520953918ae, type: 2}
+  quarryData: {fileID: 11400000, guid: 60c9b22bb0dd66549948fdd048aee1b9, type: 2}

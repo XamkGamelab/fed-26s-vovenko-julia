@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50c996b8406b07b4d8a096db6c1ff74a, type: 3}
+  m_Name: QuarryData
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingData
+  Type: 1
+  Size: {x: 2, y: 2}
+  BuildTime: 2
+  CostType: 0
+  Cost: 10
+  ProducedResource: 1
+  ProductionAmount: 1
+  ProductionInterval: 3
+  Prefab: {fileID: 1344591832216786285, guid: 21a899a79c882d049901c94c87508864, type: 3}

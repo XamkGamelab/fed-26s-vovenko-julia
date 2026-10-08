@@ -21,11 +21,20 @@ public class ManagementCursor : MonoBehaviour
 
     private Vector3 startPosition;
 
+
+    [Header("Building Selection")]
+    [SerializeField] private BuildingData woodcutterData;
+    [SerializeField] private BuildingData quarryData;
+
+    private BuildingData selectedBuilding;
+    private SimulationManager simulationManager;
+
+
     private void Awake()
     {
         if (gameManager == null)
         {
-            gameManager = FindFirstObjectByType<GameManager>();
+            gameManager = FindAnyObjectByType<GameManager>();
         }
     }
 
@@ -62,6 +71,7 @@ public class ManagementCursor : MonoBehaviour
     {
         HandleMove();
         HandleRawInput();
+        HandleBuildingSelection();
     }
 
     private void HandleMove()
@@ -100,10 +110,61 @@ public class ManagementCursor : MonoBehaviour
         }
     }
 
+
+    private void HandleBuildingSelection()
+    {
+        if (Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            selectedBuilding = woodcutterData;
+            Debug.Log("Selected Woodcutter");
+        }
+
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
+            selectedBuilding = quarryData;
+            Debug.Log("Selected Quarry");
+        }
+    }
+
+
     private void OnSelect(InputAction.CallbackContext context)
     {
-        Debug.Log("Action: Select called");
+        if (gameManager == null ||
+            gameManager.CurrentState != GameState.Gameplay)
+            return;
+
+        if (selectedBuilding == null)
+        {
+            Debug.Log("Select a building first (1 or 2).");
+            return;
+        }
+
+        if (simulationManager == null)
+        {
+            simulationManager =
+                GetComponentInParent<SimulationManager>();
+        }
+
+        if (simulationManager == null)
+        {
+            Debug.LogError("SimulationManager not found!");
+            return;
+        }
+
+        Vector2Int gridPosition = new Vector2Int(
+            Mathf.RoundToInt(transform.position.x),
+            Mathf.RoundToInt(transform.position.z)
+        );
+
+        simulationManager.TryPlaceBuilding(
+            selectedBuilding,
+            gridPosition
+        );
     }
+
 
     private void OnCancel(InputAction.CallbackContext context)
     {
