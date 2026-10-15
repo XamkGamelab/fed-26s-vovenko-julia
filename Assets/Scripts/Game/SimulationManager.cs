@@ -100,6 +100,10 @@ public class SimulationManager : MonoBehaviour
 
     public bool TryPlaceBuilding(BuildingData data, Vector2Int gridPosition)
     {
+
+        if (isPaused)
+            return false;
+
         if (data == null || data.Prefab == null ||
             playerResources == null || buildingGrid == null)
             return false;
@@ -144,8 +148,11 @@ public class SimulationManager : MonoBehaviour
 
         building.Initialize(data);
 
-        // Deduct resources after successful creation
-        playerResources.TrySpend(data.CostType, data.Cost);
+        if (!playerResources.TrySpend(data.CostType, data.Cost))
+        {
+            Destroy(instance);
+            return false;
+        }
 
         // Mark cells as occupied
         buildingGrid.SetCellOccupiedState(
