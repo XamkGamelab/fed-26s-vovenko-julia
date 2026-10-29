@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 3170700544608852833}
   - component: {fileID: 6775026989194370455}
   - component: {fileID: 148519605140763064}
+  - component: {fileID: 1550069327311835923}
+  - component: {fileID: 8847711294680979808}
   m_Layer: 0
   m_Name: Quarry
   m_TagString: Untagged
@@ -127,6 +129,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProductionBuilding
   buildingData: {fileID: 11400000, guid: 60c9b22bb0dd66549948fdd048aee1b9, type: 2}
+--- !u!114 &1550069327311835923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344591832216786285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94f4da81611feaf439cf0469076f907f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingConstructionVisual
+  visualRoot: {fileID: 7766582057033073118}
+  riseHeight: 5
+--- !u!114 &8847711294680979808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344591832216786285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a06b2e790c4fcbe49bd6e3a87eeff8e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingPlacementEffect
+  placementEffectPrefab: {fileID: 4498351196948309674, guid: 29d1451d7bb2bc7448d88705659f2f42, type: 3}
+  effectOffset: {x: 0, y: -0.45, z: 0}
 --- !u!1001 &7801017708251473461
 PrefabInstance:
   m_ObjectHideFlags: 0

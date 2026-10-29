@@ -146,7 +146,7 @@ public class SimulationManager : MonoBehaviour
             return false;
         }
 
-        building.Initialize(data);
+        building.BeginConstruction();
 
         if (!playerResources.TrySpend(data.CostType, data.Cost))
         {
@@ -163,6 +163,7 @@ public class SimulationManager : MonoBehaviour
 
         // Register building for production
         RegisterBuilding(building);
+        GameEventSystem.BuildingPlaced(building);
 
         Debug.Log($"Placed {data.Type} at {gridPosition}");
 
