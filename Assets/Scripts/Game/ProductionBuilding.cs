@@ -55,6 +55,8 @@ public class ProductionBuilding : Building
                 Data.ProductionAmount
             );
 
+            GameEventSystem.ProductionCompleted(this);
+
             Debug.Log(
                 $"{Data.Type} produced {Data.ProductionAmount} " +
                 $"{Data.ProducedResource}"

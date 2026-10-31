@@ -20,4 +20,6 @@ MonoBehaviour:
   ProducedResource: 0
   ProductionAmount: 1
   ProductionInterval: 2
+  UseAmbientAudio: 1
+  AmbientProfile: {fileID: 11400000, guid: e50be7b5d34529246b93fb0115578fa3, type: 2}
   Prefab: {fileID: 5786235827371803478, guid: 08c3a73913a03f54090447b6ece5ffaf, type: 3}

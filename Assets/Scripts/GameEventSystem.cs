@@ -9,6 +9,9 @@ public static class GameEventSystem
     public static event Action<ProductionBuilding, float> OnConstructionProgressChanged;
     public static event Action<ProductionBuilding> OnBuildingConstructionCompleted;
 
+    public static event Action OnInvalidBuildingPlacement;
+    public static event Action<ProductionBuilding> OnProductionCompleted;
+
     public static void GameStateChanged(GameState newState)
     {
         OnGameStateChanged?.Invoke(newState);
@@ -34,5 +37,15 @@ public static class GameEventSystem
     public static void BuildingConstructionCompleted(ProductionBuilding building)
     {
         OnBuildingConstructionCompleted?.Invoke(building);
+    }
+
+    public static void InvalidBuildingPlacement()
+    {
+        OnInvalidBuildingPlacement?.Invoke();
+    }
+
+    public static void ProductionCompleted(ProductionBuilding building)
+    {
+        OnProductionCompleted?.Invoke(building);
     }
 }

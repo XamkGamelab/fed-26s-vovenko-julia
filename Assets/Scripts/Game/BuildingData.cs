@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public enum BuildingType
@@ -32,6 +31,10 @@ public class BuildingData : ScriptableObject
     public ResourceType ProducedResource;
     public int ProductionAmount = 1;
     public float ProductionInterval = 2f;
+
+    [Header("Ambient Audio")]
+    public bool UseAmbientAudio;
+    public AmbientAudioProfile AmbientProfile;
 
     [Header("Prefab")]
     public GameObject Prefab;
