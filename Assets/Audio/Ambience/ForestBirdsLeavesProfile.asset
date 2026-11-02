@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AmbientAudioProfile
   clips:
   - {fileID: 8300000, guid: 06834d83fb398a04396b0bcef27acd3a, type: 3}
-  volume: 0.15
+  volume: 0.4
   minDistance: 2
-  maxDistance: 15
+  maxDistance: 30

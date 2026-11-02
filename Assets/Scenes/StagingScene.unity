@@ -939,12 +939,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bafef0383cd6a6143a1bb81487c2fe44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  constructionTapInterval: 0.5
   musicSource: {fileID: 278677640}
   soundSource: {fileID: 2101148205}
   audioMixer: {fileID: 24100000, guid: db2369671ba7b734b8a5df29f4a20a95, type: 2}
   ambienceMixerGroup: {fileID: 2040491925596214047, guid: db2369671ba7b734b8a5df29f4a20a95, type: 2}
   initialAmbientSources: 2
+  sfxMixerGroup: {fileID: 8123310220738166660, guid: db2369671ba7b734b8a5df29f4a20a95, type: 2}
+  productionSfxMinDistance: 1
+  productionSfxMaxDistance: 40
+  constructionTapInterval: 0.5
   musicClips:
   - type: 0
     clip: {fileID: 8300000, guid: 7ffa0013d4557d54dadd26f45ef653cd, type: 3}
@@ -960,10 +963,10 @@ MonoBehaviour:
     volume: 1
   - type: 3
     clip: {fileID: 8300000, guid: e37683c4dd0ee354caef2497a030dde1, type: 3}
-    volume: 0.15
+    volume: 1
   - type: 4
     clip: {fileID: 8300000, guid: f5bacbcc0acc37c4d9717f0f6c877f8d, type: 3}
-    volume: 0.15
+    volume: 1
 --- !u!4 &250920019
 Transform:
   m_ObjectHideFlags: 0
@@ -1524,7 +1527,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38268343, y: 0.0000000012271582, z: -5.083055e-10, w: 0.92387956}
-  m_LocalPosition: {x: 0.5, y: 10.35, z: -9.5}
+  m_LocalPosition: {x: 0.5, y: 6.3, z: -5.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
