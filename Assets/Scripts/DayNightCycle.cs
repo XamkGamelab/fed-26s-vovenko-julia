@@ -1,7 +1,14 @@
+using System;
 using UnityEngine;
 
+[Serializable]
+public class DayNightSaveData
+{
+    public float elapsedGameTime;
+}
+
 [RequireComponent(typeof(Light))]
-public class DayNightCycle : MonoBehaviour
+public class DayNightCycle : MonoBehaviour, IJsonSaveable
 {
     [SerializeField, Min(10f)] private float fullDayDuration = 60f;
     [SerializeField, Min(0f)] private float dayIntensity = 2f;
@@ -12,6 +19,7 @@ public class DayNightCycle : MonoBehaviour
 
     private Light sun;
     private Vector3 startingRotation;
+    private float elapsedGameTime;
 
     private void Awake()
     {
@@ -22,10 +30,18 @@ public class DayNightCycle : MonoBehaviour
 
     private void Update()
     {
-        float phase = (Time.time / fullDayDuration) * Mathf.PI * 2f;
-        float daylight = Mathf.Clamp01(Mathf.Sin(phase));
+        elapsedGameTime += Time.deltaTime;
+        ApplyCycle();
+    }
 
+    private void ApplyCycle()
+    {
+        float phase =
+            (elapsedGameTime / fullDayDuration) * Mathf.PI * 2f;
+
+        float daylight = Mathf.Clamp01(Mathf.Sin(phase));
         float sunAngle = phase * Mathf.Rad2Deg;
+
         transform.rotation = Quaternion.Euler(
             sunAngle,
             startingRotation.y,
@@ -34,5 +50,43 @@ public class DayNightCycle : MonoBehaviour
 
         sun.intensity = Mathf.Lerp(nightIntensity, dayIntensity, daylight);
         sun.color = Color.Lerp(nightColor, dayColor, daylight);
+    }
+
+    public string CaptureState()
+    {
+        DayNightSaveData data = new DayNightSaveData
+        {
+            elapsedGameTime = elapsedGameTime
+        };
+
+        return JsonUtility.ToJson(data);
+    }
+
+    public void RestoreState(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            Debug.LogWarning("Day/night save data is empty.");
+            return;
+        }
+
+        try
+        {
+            DayNightSaveData data =
+                JsonUtility.FromJson<DayNightSaveData>(json);
+
+            if (data == null)
+            {
+                Debug.LogError("Day/night save data could not be read.");
+                return;
+            }
+
+            elapsedGameTime = Mathf.Max(0f, data.elapsedGameTime);
+            ApplyCycle();
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError($"Could not load day/night data: {exception.Message}");
+        }
     }
 }

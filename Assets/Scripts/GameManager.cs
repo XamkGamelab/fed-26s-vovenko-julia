@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject simulationManagerPrefab;
 
     private GameObject simulationManagerInstance;
+    public SimulationManager CurrentSimulationManager { get; private set; }
 
     private void Start()
     {
@@ -49,6 +50,8 @@ public class GameManager : MonoBehaviour
         SimulationManager simulationManager =
             simulationManagerInstance.GetComponent<SimulationManager>();
 
+        CurrentSimulationManager = simulationManager;
+
         simulationManager.Initialize();
     }
 
@@ -58,6 +61,19 @@ public class GameManager : MonoBehaviour
         {
             Destroy(simulationManagerInstance);
             simulationManagerInstance = null;
+            CurrentSimulationManager = null;
         }
+    }
+
+    public SimulationManager StartFreshSimulationForLoad()
+    {
+        StopSimulation();
+
+        if (CurrentState != GameState.Gameplay)
+            ChangeState(GameState.Gameplay);
+        else
+            StartSimulation();
+
+        return CurrentSimulationManager;
     }
 }

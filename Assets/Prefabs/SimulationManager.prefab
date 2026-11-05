@@ -44,5 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce36b6cb680b77444be7ecf678567a0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimulationManager
+  buildingDataAssets:
+  - {fileID: 11400000, guid: 60c9b22bb0dd66549948fdd048aee1b9, type: 2}
+  - {fileID: 11400000, guid: 3ef73053096b90f47aed0520953918ae, type: 2}
   worldCursorPrefab: {fileID: 2414338634096820425, guid: 42ed8102a09007c47b25a7a27a97fb94, type: 3}
   cameraPrefab: {fileID: 1155619485448922865, guid: 00eaf7a09a2b51141b3177297f43b95a, type: 3}
