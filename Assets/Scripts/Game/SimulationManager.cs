@@ -10,6 +10,7 @@ public class SimulationSaveData
     public List<string> buildingStates = new List<string>();
 }
 
+
 public class SimulationManager : MonoBehaviour, IJsonSaveable
 {
     [Header("Building Data")]
@@ -30,6 +31,11 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
         new List<ProductionBuilding>();
 
     private bool isPaused;
+
+    [SerializeField, Min(0f)] private float stoneDepositRange = 4f;
+
+    [Header("Building Placement")]
+    [SerializeField, Min(0f)] private float woodcutterTreeRange = 4f;
 
     public PlayerResources Resources => playerResources;
     public BuildingGrid Grid => buildingGrid;
@@ -110,7 +116,6 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
 
     public bool TryPlaceBuilding(BuildingData data, Vector2Int gridPosition)
     {
-
         if (isPaused)
             return false;
 
@@ -118,21 +123,33 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             playerResources == null || buildingGrid == null)
             return false;
 
-        // Check if the required cells are occupied
         if (buildingGrid.IsOccupied(gridPosition, data.Size))
         {
             Debug.Log("Cannot place building: cells occupied.");
             return false;
         }
 
-        // Check construction cost
+        
+        if (data.Type == BuildingType.Quarry &&
+            !HasNearbyStoneDeposit(gridPosition, data))
+        {
+            Debug.Log("Cannot place Quarry: no stone deposit nearby.");
+            return false;
+        }
+
+        if (data.Type == BuildingType.Woodcutter &&
+            !HasNearbyTree(gridPosition, data))
+        {
+            Debug.Log("Cannot place Woodcutter: no tree nearby.");
+            return false;
+        }
+
         if (!playerResources.HasEnough(data.CostType, data.Cost))
         {
             Debug.Log("Cannot place building: not enough resources.");
             return false;
         }
 
-        // Create building at the selected grid position
         Vector3 worldPosition = new Vector3(
             gridPosition.x + (data.Size.x - 1) * 0.5f,
             0.5f,
@@ -166,20 +183,71 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             return false;
         }
 
-        // Mark cells as occupied
         buildingGrid.SetCellOccupiedState(
             gridPosition,
             data.Size,
             building
         );
 
-        // Register building for production
         RegisterBuilding(building);
         GameEventSystem.BuildingPlaced(building);
 
         Debug.Log($"Placed {data.Type} at {gridPosition}");
-
         return true;
+    }
+
+    private bool HasNearbyTree(Vector2Int gridPosition, BuildingData data)
+    {
+        Vector3 buildingCenter = new Vector3(
+            gridPosition.x + (data.Size.x - 1) * 0.5f,
+            0f,
+            gridPosition.y + (data.Size.y - 1) * 0.5f
+        );
+
+        TreeResourceSource[] trees =
+            FindObjectsByType<TreeResourceSource>(FindObjectsSortMode.None);
+
+        foreach (TreeResourceSource tree in trees)
+        {
+            if (tree == null)
+                continue;
+
+            Vector3 offset = tree.transform.position - buildingCenter;
+            offset.y = 0f;
+
+            if (offset.sqrMagnitude <= woodcutterTreeRange * woodcutterTreeRange)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool HasNearbyStoneDeposit(
+    Vector2Int gridPosition,
+    BuildingData data)
+    {
+        Vector3 buildingCenter = new Vector3(
+            gridPosition.x + (data.Size.x - 1) * 0.5f,
+            0f,
+            gridPosition.y + (data.Size.y - 1) * 0.5f
+        );
+
+        StoneDeposit[] deposits =
+            FindObjectsByType<StoneDeposit>(FindObjectsSortMode.None);
+
+        foreach (StoneDeposit deposit in deposits)
+        {
+            if (deposit == null)
+                continue;
+
+            Vector3 offset = deposit.transform.position - buildingCenter;
+            offset.y = 0f;
+
+            if (offset.sqrMagnitude <= stoneDepositRange * stoneDepositRange)
+                return true;
+        }
+
+        return false;
     }
 
     public string CaptureState()

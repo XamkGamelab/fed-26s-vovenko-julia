@@ -26,15 +26,20 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text stoneText;
 
+    [Header("Building Placement Hint")]
+    [SerializeField] private TMP_Text buildingHintText;
+
     private void OnEnable()
     {
         GameEventSystem.OnGameStateChanged += HandleGameStateChanged;
         GameEventSystem.OnResourcesChanged += HandleResourcesChanged;
+        GameEventSystem.OnBuildingSelected += HandleBuildingSelected;
     }
     private void OnDisable()
     {
         GameEventSystem.OnGameStateChanged -= HandleGameStateChanged;
         GameEventSystem.OnResourcesChanged -= HandleResourcesChanged;
+        GameEventSystem.OnBuildingSelected -= HandleBuildingSelected;
     }
 
 
@@ -103,6 +108,23 @@ public class UIManager : MonoBehaviour
             ResourceType.Stone,
             simulation.Resources.GetAmount(ResourceType.Stone)
         );
+    }
+
+    private void HandleBuildingSelected(BuildingType type)
+    {
+        if (buildingHintText == null)
+            return;
+
+        switch (type)
+        {
+            case BuildingType.Woodcutter:
+                buildingHintText.text = "Place the Woodcutter near trees.";
+                break;
+
+            case BuildingType.Quarry:
+                buildingHintText.text = "Place the Quarry near a stone deposit.";
+                break;
+        }
     }
 
 }

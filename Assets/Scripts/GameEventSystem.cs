@@ -11,6 +11,7 @@ public static class GameEventSystem
 
     public static event Action OnInvalidBuildingPlacement;
     public static event Action<ProductionBuilding> OnProductionCompleted;
+    public static event Action<BuildingType> OnBuildingSelected;
 
     public static void GameStateChanged(GameState newState)
     {
@@ -47,5 +48,10 @@ public static class GameEventSystem
     public static void ProductionCompleted(ProductionBuilding building)
     {
         OnProductionCompleted?.Invoke(building);
+    }
+
+    public static void BuildingSelected(BuildingType type)
+    {
+        OnBuildingSelected?.Invoke(type);
     }
 }

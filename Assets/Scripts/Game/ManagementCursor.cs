@@ -118,13 +118,13 @@ public class ManagementCursor : MonoBehaviour
 
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
-            selectedBuilding = woodcutterData;
+            SelectBuilding(woodcutterData);
             Debug.Log("Selected Woodcutter");
         }
 
         if (Keyboard.current.digit2Key.wasPressedThisFrame)
         {
-            selectedBuilding = quarryData;
+            SelectBuilding(quarryData);
             Debug.Log("Selected Quarry");
         }
     }
@@ -197,5 +197,13 @@ public class ManagementCursor : MonoBehaviour
         {
             gameManager.ChangeState(GameState.Gameplay);
         }
+    }
+
+    private void SelectBuilding(BuildingData data)
+    {
+        selectedBuilding = data;
+
+        if (selectedBuilding != null)
+            GameEventSystem.BuildingSelected(selectedBuilding.Type);
     }
 }
