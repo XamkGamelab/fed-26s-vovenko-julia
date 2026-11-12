@@ -33,11 +33,15 @@ public class ProductionBuilding : Building, IJsonSaveable
         IsUnderConstruction = true;
     }
 
-    public void Simulate(float deltaTime, PlayerResources playerResources)
+    public void Simulate(
+        float deltaTime,
+        PlayerResources playerResources,
+        bool isDay)
     {
         if (Data == null || playerResources == null)
             return;
 
+        
         if (IsUnderConstruction)
         {
             float buildTime = Mathf.Max(Data.BuildTime, 0.01f);
@@ -57,6 +61,10 @@ public class ProductionBuilding : Building, IJsonSaveable
             return;
         }
 
+        
+        if (!isDay)
+            return;
+
         float interval = Data.ProductionInterval;
 
         if (interval <= 0f)
@@ -67,6 +75,7 @@ public class ProductionBuilding : Building, IJsonSaveable
         while (productionTimer >= interval)
         {
             productionTimer -= interval;
+
             playerResources.Add(
                 Data.ProducedResource,
                 Data.ProductionAmount

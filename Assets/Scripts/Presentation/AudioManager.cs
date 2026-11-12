@@ -58,6 +58,9 @@ public class AudioManager : MonoBehaviour
     [Header("Construction Sound")]
     [SerializeField] private float constructionTapInterval = 0.5f;
 
+    [SerializeField] private DayNightCycle dayNightCycle;
+    private bool wasDay;
+
     [Header("Clips")]
     [SerializeField]
     private List<MusicClipEntry> musicClips =
@@ -160,6 +163,11 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         PlayMusic(MusicType.Village);
+
+        if (dayNightCycle == null)
+            dayNightCycle = FindAnyObjectByType<DayNightCycle>();
+
+        wasDay = dayNightCycle != null && dayNightCycle.IsDay;
     }
 
     public void PlayMusic(MusicType type)
@@ -244,6 +252,10 @@ public class AudioManager : MonoBehaviour
 
     private void HandleConstructionCompleted(ProductionBuilding building)
     {
+
+        if (dayNightCycle == null || !dayNightCycle.IsDay)
+            return;
+
         if (building == null)
             return;
 
@@ -417,6 +429,35 @@ public class AudioManager : MonoBehaviour
         {
             activeSpatialSfxSources.Remove(source);
             ReturnSpatialSource(source);
+        }
+
+        bool isDay = dayNightCycle != null && dayNightCycle.IsDay;
+
+        if (isDay != wasDay)
+        {
+            
+            foreach (AudioSource source in activeAmbientSources.Values)
+            {
+                if (source == null)
+                    continue;
+
+                if (isDay)
+                    source.UnPause();
+                else
+                    source.Pause();
+            }
+
+           
+            if (!isDay)
+            {
+                foreach (AudioSource source in activeSpatialSfxSources)
+                {
+                    if (source != null)
+                        source.Stop();
+                }
+            }
+
+            wasDay = isDay;
         }
     }
 }

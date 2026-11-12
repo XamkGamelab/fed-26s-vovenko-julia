@@ -29,6 +29,10 @@ public class UIManager : MonoBehaviour
     [Header("Building Placement Hint")]
     [SerializeField] private TMP_Text buildingHintText;
 
+    [Header("Day/Night Display")]
+    [SerializeField] private TMP_Text dayNightText;
+    [SerializeField] private DayNightCycle dayNightCycle;
+
     private void OnEnable()
     {
         GameEventSystem.OnGameStateChanged += HandleGameStateChanged;
@@ -125,6 +129,16 @@ public class UIManager : MonoBehaviour
                 buildingHintText.text = "Place the Quarry near a stone deposit.";
                 break;
         }
+    }
+
+    private void Update()
+    {
+        if (dayNightText == null || dayNightCycle == null)
+            return;
+
+        dayNightText.text = dayNightCycle.IsDay
+            ? "DAY | Production active"
+            : "NIGHT | Production paused";
     }
 
 }

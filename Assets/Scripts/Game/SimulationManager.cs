@@ -20,6 +20,8 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
     [SerializeField] private GameObject worldCursorPrefab;
     [SerializeField] private GameObject cameraPrefab;
 
+    private DayNightCycle dayNightCycle;
+
     private GameObject worldCursorInstance;
     private GameObject cameraInstance;
 
@@ -60,6 +62,11 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             transform
         );
 
+        dayNightCycle = FindAnyObjectByType<DayNightCycle>();
+
+        if (dayNightCycle == null)
+            Debug.LogError("DayNightCycle was not found in the scene.");
+
         CinemachineCamera cinemachineCamera =
             cameraInstance.GetComponent<CinemachineCamera>();
 
@@ -98,7 +105,8 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             {
                 building.Simulate(
                     Time.deltaTime,
-                    playerResources
+                    playerResources,
+                    dayNightCycle != null && dayNightCycle.IsDay
                 );
             }
         }

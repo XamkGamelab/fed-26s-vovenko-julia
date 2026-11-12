@@ -10,6 +10,8 @@ public class DayNightSaveData
 [RequireComponent(typeof(Light))]
 public class DayNightCycle : MonoBehaviour, IJsonSaveable
 {
+    public bool IsDay { get; private set; }
+
     [SerializeField, Min(10f)] private float fullDayDuration = 60f;
     [SerializeField, Min(0f)] private float dayIntensity = 2f;
     [SerializeField, Min(0f)] private float nightIntensity = 0.02f;
@@ -38,6 +40,7 @@ public class DayNightCycle : MonoBehaviour, IJsonSaveable
     {
         float phase =
             (elapsedGameTime / fullDayDuration) * Mathf.PI * 2f;
+        IsDay = Mathf.Sin(phase) > 0f;
 
         float daylight = Mathf.Clamp01(Mathf.Sin(phase));
         float sunAngle = phase * Mathf.Rad2Deg;
