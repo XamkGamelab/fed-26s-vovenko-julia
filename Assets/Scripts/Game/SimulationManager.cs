@@ -134,6 +134,7 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
         if (buildingGrid.IsOccupied(gridPosition, data.Size))
         {
             Debug.Log("Cannot place building: cells occupied.");
+            GameEventSystem.PlayerMessage("Cells are occupied.");
             return false;
         }
 
