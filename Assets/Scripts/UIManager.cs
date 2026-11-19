@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public enum UIPanel
 {
@@ -30,21 +31,28 @@ public class UIManager : MonoBehaviour
     [Header("Building Placement Hint")]
     [SerializeField] private TMP_Text buildingHintText;
 
+    [SerializeField, Min(0.1f)] private float playerMessageDuration = 2.5f;
+
     [Header("Day/Night Display")]
     [SerializeField] private TMP_Text dayNightText;
     [SerializeField] private DayNightCycle dayNightCycle;
+
+    private string selectedBuildingHint = string.Empty;
+    private Coroutine playerMessageCoroutine;
 
     private void OnEnable()
     {
         GameEventSystem.OnGameStateChanged += HandleGameStateChanged;
         GameEventSystem.OnResourcesChanged += HandleResourcesChanged;
         GameEventSystem.OnBuildingSelected += HandleBuildingSelected;
+        GameEventSystem.OnPlayerMessage += HandlePlayerMessage;
     }
     private void OnDisable()
     {
         GameEventSystem.OnGameStateChanged -= HandleGameStateChanged;
         GameEventSystem.OnResourcesChanged -= HandleResourcesChanged;
         GameEventSystem.OnBuildingSelected -= HandleBuildingSelected;
+        GameEventSystem.OnPlayerMessage -= HandlePlayerMessage;
     }
 
 
@@ -133,13 +141,27 @@ public class UIManager : MonoBehaviour
         switch (type)
         {
             case BuildingType.Woodcutter:
-                buildingHintText.text = "Place the Woodcutter near trees.";
+                selectedBuildingHint =
+                    "Woodcutter selected. Place near trees.";
                 break;
 
             case BuildingType.Quarry:
-                buildingHintText.text = "Place the Quarry near a stone deposit.";
+                selectedBuildingHint =
+                    "Quarry selected. Place near a stone deposit.";
+                break;
+
+            case BuildingType.Smelter:
+                selectedBuildingHint =
+                    "Smelter selected. It needs wood and stone.";
+                break;
+
+            default:
+                selectedBuildingHint = string.Empty;
                 break;
         }
+
+        if (playerMessageCoroutine == null)
+            buildingHintText.text = selectedBuildingHint;
     }
 
     private void Update()
@@ -150,6 +172,27 @@ public class UIManager : MonoBehaviour
         dayNightText.text = dayNightCycle.IsDay
             ? "DAY | Production active"
             : "NIGHT | Production paused";
+    }
+    private void HandlePlayerMessage(string message)
+    {
+        if (buildingHintText == null)
+            return;
+
+        if (playerMessageCoroutine != null)
+            StopCoroutine(playerMessageCoroutine);
+
+        buildingHintText.text = message;
+        playerMessageCoroutine = StartCoroutine(RestoreBuildingHint());
+    }
+
+    private IEnumerator RestoreBuildingHint()
+    {
+        yield return new WaitForSeconds(playerMessageDuration);
+
+        if (buildingHintText != null)
+            buildingHintText.text = selectedBuildingHint;
+
+        playerMessageCoroutine = null;
     }
 
 }
