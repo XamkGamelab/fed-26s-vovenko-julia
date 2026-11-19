@@ -18,6 +18,7 @@ public class PlayerResources : IJsonSaveable
     {
         resources[ResourceType.Wood] = 20;
         resources[ResourceType.Stone] = 0;
+        resources[ResourceType.Metal] = 0;
     }
 
     public int GetAmount(ResourceType type)

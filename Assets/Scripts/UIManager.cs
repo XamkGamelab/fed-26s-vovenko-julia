@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     [Header("Resource Display")]
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text stoneText;
+    [SerializeField] private TMP_Text metalText;
 
     [Header("Building Placement Hint")]
     [SerializeField] private TMP_Text buildingHintText;
@@ -59,6 +60,11 @@ public class UIManager : MonoBehaviour
             case ResourceType.Stone:
                 if (stoneText != null)
                     stoneText.text = $"Stone: {amount}";
+                break;
+
+            case ResourceType.Metal:
+                if (metalText != null)
+                    metalText.text = $"Metal: {amount}";
                 break;
         }
     }
@@ -111,6 +117,11 @@ public class UIManager : MonoBehaviour
         HandleResourcesChanged(
             ResourceType.Stone,
             simulation.Resources.GetAmount(ResourceType.Stone)
+        );
+
+        HandleResourcesChanged(
+            ResourceType.Metal,
+            simulation.Resources.GetAmount(ResourceType.Metal)
         );
     }
 

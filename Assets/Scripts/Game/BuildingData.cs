@@ -3,13 +3,15 @@ using UnityEngine;
 public enum BuildingType
 {
     Woodcutter,
-    Quarry
+    Quarry,
+    Smelter
 }
 
 public enum ResourceType
 {
     Wood,
-    Stone
+    Stone,
+    Metal
 }
 
 [CreateAssetMenu(
