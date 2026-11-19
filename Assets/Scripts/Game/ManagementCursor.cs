@@ -145,7 +145,8 @@ public class ManagementCursor : MonoBehaviour
 
         if (selectedBuilding == null)
         {
-            Debug.Log("Select a building first (1 or 2).");
+            Debug.Log("Select a building first (1, 2 or 3).");
+            GameEventSystem.PlayerMessage("Select a building first.");
             return;
         }
 

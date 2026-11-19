@@ -143,6 +143,7 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             !HasNearbyStoneDeposit(gridPosition, data))
         {
             Debug.Log("Cannot place Quarry: no stone deposit nearby.");
+            GameEventSystem.PlayerMessage("Place the Quarry near a stone deposit.");
             return false;
         }
 
@@ -150,6 +151,7 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             !HasNearbyTree(gridPosition, data))
         {
             Debug.Log("Cannot place Woodcutter: no tree nearby.");
+            GameEventSystem.PlayerMessage("Place the Woodcutter near trees.");
             return false;
         }
 
@@ -166,6 +168,7 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
         if (!hasMainCost || !hasAdditionalCost)
         {
             Debug.Log("Cannot place building: not enough resources.");
+            GameEventSystem.PlayerMessage("Not enough resources.");
             return false;
         }
 
@@ -224,6 +227,7 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
         GameEventSystem.BuildingPlaced(building);
 
         Debug.Log($"Placed {data.Type} at {gridPosition}");
+        GameEventSystem.PlayerMessage($"{data.Type} placed. Construction started.");
         return true;
     }
 
