@@ -152,11 +152,22 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
             return false;
         }
 
-        if (!playerResources.HasEnough(data.CostType, data.Cost))
+        bool hasMainCost =
+            playerResources.HasEnough(data.CostType, data.Cost);
+
+        bool hasAdditionalCost =
+            data.AdditionalCost <= 0 ||
+            playerResources.HasEnough(
+                data.AdditionalCostType,
+                data.AdditionalCost
+            );
+
+        if (!hasMainCost || !hasAdditionalCost)
         {
             Debug.Log("Cannot place building: not enough resources.");
             return false;
         }
+
 
         Vector3 worldPosition = new Vector3(
             gridPosition.x + (data.Size.x - 1) * 0.5f,
@@ -187,6 +198,17 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
 
         if (!playerResources.TrySpend(data.CostType, data.Cost))
         {
+            Destroy(instance);
+            return false;
+        }
+
+        if (data.AdditionalCost > 0 &&
+            !playerResources.TrySpend(
+                data.AdditionalCostType,
+                data.AdditionalCost
+            ))
+        {
+            playerResources.Add(data.CostType, data.Cost);
             Destroy(instance);
             return false;
         }

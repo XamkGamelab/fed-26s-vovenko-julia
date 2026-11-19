@@ -137,3 +137,4 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   woodcutterData: {fileID: 11400000, guid: 3ef73053096b90f47aed0520953918ae, type: 2}
   quarryData: {fileID: 11400000, guid: 60c9b22bb0dd66549948fdd048aee1b9, type: 2}
+  smelterData: {fileID: 11400000, guid: 88e680fbc141abc429cae5634f87bd10, type: 2}

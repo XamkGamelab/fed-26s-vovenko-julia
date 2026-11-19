@@ -74,6 +74,42 @@ public class ProductionBuilding : Building, IJsonSaveable
 
         while (productionTimer >= interval)
         {
+            bool hasFirstInput =
+                Data.InputAmount <= 0 ||
+                playerResources.HasEnough(
+                    Data.InputResource,
+                    Data.InputAmount
+                );
+
+            bool hasSecondInput =
+                Data.SecondInputAmount <= 0 ||
+                playerResources.HasEnough(
+                    Data.SecondInputResource,
+                    Data.SecondInputAmount
+                );
+
+            if (!hasFirstInput || !hasSecondInput)
+            {
+                productionTimer = interval;
+                return;
+            }
+
+            if (Data.InputAmount > 0)
+            {
+                playerResources.TrySpend(
+                    Data.InputResource,
+                    Data.InputAmount
+                );
+            }
+
+            if (Data.SecondInputAmount > 0)
+            {
+                playerResources.TrySpend(
+                    Data.SecondInputResource,
+                    Data.SecondInputAmount
+                );
+            }
+
             productionTimer -= interval;
 
             playerResources.Add(

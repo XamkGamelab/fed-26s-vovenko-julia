@@ -25,6 +25,7 @@ public class ManagementCursor : MonoBehaviour
     [Header("Building Selection")]
     [SerializeField] private BuildingData woodcutterData;
     [SerializeField] private BuildingData quarryData;
+    [SerializeField] private BuildingData smelterData;
 
     private BuildingData selectedBuilding;
     private SimulationManager simulationManager;
@@ -126,6 +127,12 @@ public class ManagementCursor : MonoBehaviour
         {
             SelectBuilding(quarryData);
             Debug.Log("Selected Quarry");
+        }
+
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
+            selectedBuilding = smelterData;
+            Debug.Log("Selected Smelter");
         }
     }
 
