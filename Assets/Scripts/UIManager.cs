@@ -37,6 +37,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text dayNightText;
     [SerializeField] private DayNightCycle dayNightCycle;
 
+    [Header("Building Info")]
+    [SerializeField] private TMP_Text buildingInfoText;
+
     private string selectedBuildingHint = string.Empty;
     private Coroutine playerMessageCoroutine;
 
@@ -46,6 +49,7 @@ public class UIManager : MonoBehaviour
         GameEventSystem.OnResourcesChanged += HandleResourcesChanged;
         GameEventSystem.OnBuildingSelected += HandleBuildingSelected;
         GameEventSystem.OnPlayerMessage += HandlePlayerMessage;
+        GameEventSystem.OnBuildingDataSelected += HandleBuildingDataSelected;
     }
     private void OnDisable()
     {
@@ -53,6 +57,7 @@ public class UIManager : MonoBehaviour
         GameEventSystem.OnResourcesChanged -= HandleResourcesChanged;
         GameEventSystem.OnBuildingSelected -= HandleBuildingSelected;
         GameEventSystem.OnPlayerMessage -= HandlePlayerMessage;
+        GameEventSystem.OnBuildingDataSelected -= HandleBuildingDataSelected;
     }
 
 
@@ -193,6 +198,42 @@ public class UIManager : MonoBehaviour
             buildingHintText.text = selectedBuildingHint;
 
         playerMessageCoroutine = null;
+    }
+
+    private void HandleBuildingDataSelected(BuildingData data)
+    {
+        if (buildingInfoText == null || data == null)
+            return;
+
+        string cost = $"{data.Cost} {data.CostType}";
+
+        if (data.AdditionalCost > 0)
+            cost += $" + {data.AdditionalCost} {data.AdditionalCostType}";
+
+        string inputs = "";
+
+        if (data.InputAmount > 0)
+            inputs = $"{data.InputAmount} {data.InputResource}";
+
+        if (data.SecondInputAmount > 0)
+        {
+            if (!string.IsNullOrEmpty(inputs))
+                inputs += " + ";
+
+            inputs += $"{data.SecondInputAmount} {data.SecondInputResource}";
+        }
+
+        string recipe = string.IsNullOrEmpty(inputs)
+            ? "Consumes: none"
+            : $"Consumes: {inputs}";
+
+        buildingInfoText.text =
+            $"{data.Type}\n" +
+            $"Build cost: {cost}\n" +
+            $"{recipe}\n" +
+            $"Produces: {data.ProductionAmount} {data.ProducedResource} " +
+            $"every {data.ProductionInterval:0.##} sec\n" +
+            "Schedule: day only; pauses at night.";
     }
 
 }

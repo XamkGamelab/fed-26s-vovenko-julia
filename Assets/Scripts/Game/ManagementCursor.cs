@@ -131,7 +131,7 @@ public class ManagementCursor : MonoBehaviour
 
         if (Keyboard.current.digit3Key.wasPressedThisFrame)
         {
-            selectedBuilding = smelterData;
+            SelectBuilding(smelterData);
             Debug.Log("Selected Smelter");
         }
     }
@@ -213,5 +213,6 @@ public class ManagementCursor : MonoBehaviour
 
         if (selectedBuilding != null)
             GameEventSystem.BuildingSelected(selectedBuilding.Type);
+            GameEventSystem.BuildingDataSelected(selectedBuilding);
     }
 }
