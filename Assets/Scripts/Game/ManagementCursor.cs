@@ -134,6 +134,18 @@ public class ManagementCursor : MonoBehaviour
             SelectBuilding(smelterData);
             Debug.Log("Selected Smelter");
         }
+
+        if (Keyboard.current != null &&
+            Keyboard.current.escapeKey.wasPressedThisFrame &&
+            gameManager != null &&
+            gameManager.CurrentState == GameState.Gameplay &&
+            selectedBuilding != null)
+                {
+                    SelectBuilding(null);
+                    GameEventSystem.PlayerMessage(
+                        "Building mode cancelled. Select a built building to upgrade it."
+                    );
+                }
     }
 
 
@@ -143,18 +155,8 @@ public class ManagementCursor : MonoBehaviour
             gameManager.CurrentState != GameState.Gameplay)
             return;
 
-        if (selectedBuilding == null)
-        {
-            Debug.Log("Select a building first (1, 2 or 3).");
-            GameEventSystem.PlayerMessage("Select a building first.");
-            return;
-        }
-
         if (simulationManager == null)
-        {
-            simulationManager =
-                GetComponentInParent<SimulationManager>();
-        }
+            simulationManager = GetComponentInParent<SimulationManager>();
 
         if (simulationManager == null)
         {
@@ -167,24 +169,48 @@ public class ManagementCursor : MonoBehaviour
             Mathf.RoundToInt(transform.position.z)
         );
 
-        simulationManager.TryPlaceBuilding(
-            selectedBuilding,
-            gridPosition
-        );
+        if (selectedBuilding == null)
+        {
+            ProductionBuilding building =
+                simulationManager.GetProductionBuildingAt(gridPosition);
+
+            if (building == null)
+            {
+                GameEventSystem.PlayerMessage(
+                    "No building here. Select a building to place or inspect."
+                );
+                return;
+            }
+
+            GameEventSystem.ProductionBuildingSelected(building);
+            GameEventSystem.PlayerMessage($"{building.Data.Type} selected.");
+            return;
+        }
+
+        simulationManager.TryPlaceBuilding(selectedBuilding, gridPosition);
     }
 
 
     private void OnCancel(InputAction.CallbackContext context)
     {
-        Debug.Log("Action: Cancel / Back called");
-
         if (gameManager == null)
             return;
 
-        if (gameManager.CurrentState == GameState.Paused)
+        if (gameManager.CurrentState == GameState.Gameplay)
         {
-            gameManager.ChangeState(GameState.MainMenu);
+            if (selectedBuilding != null)
+            {
+                SelectBuilding(null);
+                GameEventSystem.PlayerMessage(
+                    "Building mode cancelled. Select a built building to upgrade it."
+                );
+            }
+
+            return;
         }
+
+        if (gameManager.CurrentState == GameState.Paused)
+            gameManager.ChangeState(GameState.MainMenu);
     }
 
     private void OnToggleTime(InputAction.CallbackContext context)
@@ -210,9 +236,15 @@ public class ManagementCursor : MonoBehaviour
     private void SelectBuilding(BuildingData data)
     {
         selectedBuilding = data;
+        GameEventSystem.ProductionBuildingSelected(null);
 
-        if (selectedBuilding != null)
-            GameEventSystem.BuildingSelected(selectedBuilding.Type);
-            GameEventSystem.BuildingDataSelected(selectedBuilding);
+        if (selectedBuilding == null)
+        {
+            GameEventSystem.BuildingDataSelected(null);
+            return;
+        }
+
+        GameEventSystem.BuildingSelected(selectedBuilding.Type);
+        GameEventSystem.BuildingDataSelected(selectedBuilding);
     }
 }

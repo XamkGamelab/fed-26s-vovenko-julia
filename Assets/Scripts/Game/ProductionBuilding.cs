@@ -10,6 +10,7 @@ public class ProductionBuildingSaveData
     public float constructionTimer;
     public float productionTimer;
     public bool isUnderConstruction;
+    public int upgradeLevel;
 }
 
 public class ProductionBuilding : Building, IJsonSaveable
@@ -17,6 +18,9 @@ public class ProductionBuilding : Building, IJsonSaveable
     private float productionTimer;
     private float constructionTimer;
     private Vector2Int gridPosition;
+    private int upgradeLevel;
+
+    public int UpgradeLevel => upgradeLevel;
 
     public bool IsUnderConstruction { get; private set; }
     public float ConstructionProgress { get; private set; }
@@ -65,7 +69,7 @@ public class ProductionBuilding : Building, IJsonSaveable
         if (!isDay)
             return;
 
-        float interval = Data.ProductionInterval;
+        float interval = GetProductionInterval();
 
         if (interval <= 0f)
             return;
@@ -135,7 +139,8 @@ public class ProductionBuilding : Building, IJsonSaveable
             gridY = gridPosition.y,
             constructionTimer = constructionTimer,
             productionTimer = productionTimer,
-            isUnderConstruction = IsUnderConstruction
+            isUnderConstruction = IsUnderConstruction,
+            upgradeLevel = upgradeLevel
         };
 
         return JsonUtility.ToJson(data);
@@ -167,6 +172,7 @@ public class ProductionBuilding : Building, IJsonSaveable
             return;
         }
 
+        upgradeLevel = Mathf.Clamp(data.upgradeLevel, 0, Data.MaxUpgradeLevel);
         gridPosition = new Vector2Int(data.gridX, data.gridY);
         constructionTimer = Mathf.Max(0f, data.constructionTimer);
         productionTimer = Mathf.Max(0f, data.productionTimer);
@@ -181,5 +187,47 @@ public class ProductionBuilding : Building, IJsonSaveable
         {
             ConstructionProgress = IsUnderConstruction ? 0f : 1f;
         }
+    }
+
+    public int GetNextUpgradeCost()
+    {
+        if (Data == null || upgradeLevel >= Data.MaxUpgradeLevel)
+            return 0;
+
+        if (upgradeLevel == 0)
+            return Data.FirstUpgradeMetalCost;
+
+        if (upgradeLevel == 1)
+            return Data.SecondUpgradeMetalCost;
+
+        return 0;
+    }
+
+    public bool TryUpgrade(PlayerResources playerResources)
+    {
+        if (Data == null ||
+            playerResources == null ||
+            IsUnderConstruction ||
+            upgradeLevel >= Data.MaxUpgradeLevel)
+        {
+            return false;
+        }
+
+        int cost = GetNextUpgradeCost();
+
+        if (cost <= 0 || !playerResources.TrySpend(ResourceType.Metal, cost))
+            return false;
+
+        upgradeLevel++;
+        return true;
+    }
+
+    private float GetProductionInterval()
+    {
+        if (Data == null)
+            return 0f;
+
+        return Data.ProductionInterval *
+               Mathf.Pow(Data.ProductionIntervalMultiplierPerLevel, upgradeLevel);
     }
 }

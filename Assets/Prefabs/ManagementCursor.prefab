@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ManagementCursor
   moveAction: {fileID: 1344558780832781692, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   selectAction: {fileID: -1152403615198392648, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  cancelAction: {fileID: -2592690249815572290, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  cancelAction: {fileID: 7727032971491509709, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   toggleTimeAction: {fileID: -1696231985799946697, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   moveSpeed: 5
   minX: -20

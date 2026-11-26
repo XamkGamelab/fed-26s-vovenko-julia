@@ -121,6 +121,13 @@ public class SimulationManager : MonoBehaviour, IJsonSaveable
         }
     }
 
+    public ProductionBuilding GetProductionBuildingAt(Vector2Int position)
+    {
+        if (buildingGrid == null)
+            return null;
+
+        return buildingGrid.GetBuildingAt(position) as ProductionBuilding;
+    }
 
     public bool TryPlaceBuilding(BuildingData data, Vector2Int gridPosition)
     {

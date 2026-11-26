@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,13 +15,17 @@ public class BuildingGrid
                 Vector2Int cell = position + new Vector2Int(x, y);
 
                 if (occupiedCells.ContainsKey(cell))
-                {
                     return true;
-                }
             }
         }
 
         return false;
+    }
+
+    public Building GetBuildingAt(Vector2Int position)
+    {
+        occupiedCells.TryGetValue(position, out Building building);
+        return building;
     }
 
     public void SetCellOccupiedState(

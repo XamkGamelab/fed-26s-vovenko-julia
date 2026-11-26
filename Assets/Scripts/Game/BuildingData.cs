@@ -40,6 +40,12 @@ public class BuildingData : ScriptableObject
     public ResourceType InputResource;
     [Min(0)] public int InputAmount;
 
+    [Header("Upgrades")]
+    [Min(0)] public int MaxUpgradeLevel = 2;
+    [Min(0)] public int FirstUpgradeMetalCost = 5;
+    [Min(0)] public int SecondUpgradeMetalCost = 10;
+    [Range(0.1f, 1f)] public float ProductionIntervalMultiplierPerLevel = 0.8f;
+
     public ResourceType SecondInputResource;
     [Min(0)] public int SecondInputAmount;
 

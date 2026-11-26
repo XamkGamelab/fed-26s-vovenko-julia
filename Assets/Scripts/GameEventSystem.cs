@@ -14,6 +14,7 @@ public static class GameEventSystem
     public static event Action<BuildingType> OnBuildingSelected;
     public static event Action<BuildingData> OnBuildingDataSelected;
     public static event Action<string> OnPlayerMessage;
+    public static event Action<ProductionBuilding> OnProductionBuildingSelected;
 
     public static void GameStateChanged(GameState newState)
     {
@@ -65,5 +66,9 @@ public static class GameEventSystem
     public static void PlayerMessage(string message)
     {
         OnPlayerMessage?.Invoke(message);
+    }
+    public static void ProductionBuildingSelected(ProductionBuilding building)
+    {
+        OnProductionBuildingSelected?.Invoke(building);
     }
 }

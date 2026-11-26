@@ -9,6 +9,7 @@ public class PlayerResources : IJsonSaveable
     {
         public int wood;
         public int stone;
+        public int metal;
     }
 
     private Dictionary<ResourceType, int> resources =
@@ -57,7 +58,8 @@ public class PlayerResources : IJsonSaveable
         ResourceSaveData data = new ResourceSaveData
         {
             wood = GetAmount(ResourceType.Wood),
-            stone = GetAmount(ResourceType.Stone)
+            stone = GetAmount(ResourceType.Stone),
+            metal = GetAmount(ResourceType.Metal)
         };
 
         return JsonUtility.ToJson(data);
@@ -91,6 +93,7 @@ public class PlayerResources : IJsonSaveable
 
         resources[ResourceType.Wood] = Mathf.Max(0, data.wood);
         resources[ResourceType.Stone] = Mathf.Max(0, data.stone);
+        resources[ResourceType.Metal] = Mathf.Max(0, data.metal);
 
         GameEventSystem.ResourcesChanged(
             ResourceType.Wood,
@@ -99,5 +102,9 @@ public class PlayerResources : IJsonSaveable
         GameEventSystem.ResourcesChanged(
             ResourceType.Stone,
             resources[ResourceType.Stone]);
+
+        GameEventSystem.ResourcesChanged(
+            ResourceType.Metal,
+            resources[ResourceType.Metal]);
     }
 }
