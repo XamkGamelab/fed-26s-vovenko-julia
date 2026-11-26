@@ -15,13 +15,15 @@ public class ProductionBuildingSaveData
 
 public class ProductionBuilding : Building, IJsonSaveable
 {
+    [Header("Upgrade Indicator")]
+    [SerializeField] private GameObject upgradeIndicator;
+
     private float productionTimer;
     private float constructionTimer;
     private Vector2Int gridPosition;
     private int upgradeLevel;
 
     public int UpgradeLevel => upgradeLevel;
-
     public bool IsUnderConstruction { get; private set; }
     public float ConstructionProgress { get; private set; }
 
@@ -35,6 +37,9 @@ public class ProductionBuilding : Building, IJsonSaveable
         constructionTimer = 0f;
         ConstructionProgress = 0f;
         IsUnderConstruction = true;
+
+        if (upgradeIndicator != null)
+            upgradeIndicator.SetActive(false);
     }
 
     public void Simulate(
@@ -45,7 +50,9 @@ public class ProductionBuilding : Building, IJsonSaveable
         if (Data == null || playerResources == null)
             return;
 
-        
+        if (upgradeIndicator != null)
+            upgradeIndicator.SetActive(CanUpgrade(playerResources));
+
         if (IsUnderConstruction)
         {
             float buildTime = Mathf.Max(Data.BuildTime, 0.01f);
@@ -65,7 +72,6 @@ public class ProductionBuilding : Building, IJsonSaveable
             return;
         }
 
-        
         if (!isDay)
             return;
 
@@ -130,65 +136,6 @@ public class ProductionBuilding : Building, IJsonSaveable
         }
     }
 
-    public string CaptureState()
-    {
-        ProductionBuildingSaveData data = new ProductionBuildingSaveData
-        {
-            type = Data.Type,
-            gridX = gridPosition.x,
-            gridY = gridPosition.y,
-            constructionTimer = constructionTimer,
-            productionTimer = productionTimer,
-            isUnderConstruction = IsUnderConstruction,
-            upgradeLevel = upgradeLevel
-        };
-
-        return JsonUtility.ToJson(data);
-    }
-
-    public void RestoreState(string json)
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            Debug.LogWarning("Building save data is empty.");
-            return;
-        }
-
-        ProductionBuildingSaveData data;
-
-        try
-        {
-            data = JsonUtility.FromJson<ProductionBuildingSaveData>(json);
-        }
-        catch (Exception exception)
-        {
-            Debug.LogError($"Could not load building data: {exception.Message}");
-            return;
-        }
-
-        if (data == null)
-        {
-            Debug.LogError("Building save data could not be read.");
-            return;
-        }
-
-        upgradeLevel = Mathf.Clamp(data.upgradeLevel, 0, Data.MaxUpgradeLevel);
-        gridPosition = new Vector2Int(data.gridX, data.gridY);
-        constructionTimer = Mathf.Max(0f, data.constructionTimer);
-        productionTimer = Mathf.Max(0f, data.productionTimer);
-        IsUnderConstruction = data.isUnderConstruction;
-
-        if (IsUnderConstruction && Data != null)
-        {
-            float buildTime = Mathf.Max(Data.BuildTime, 0.01f);
-            ConstructionProgress = Mathf.Clamp01(constructionTimer / buildTime);
-        }
-        else
-        {
-            ConstructionProgress = IsUnderConstruction ? 0f : 1f;
-        }
-    }
-
     public int GetNextUpgradeCost()
     {
         if (Data == null || upgradeLevel >= Data.MaxUpgradeLevel)
@@ -203,10 +150,10 @@ public class ProductionBuilding : Building, IJsonSaveable
         return 0;
     }
 
-    public bool TryUpgrade(PlayerResources playerResources)
+    public bool CanUpgrade(PlayerResources resources)
     {
         if (Data == null ||
-            playerResources == null ||
+            resources == null ||
             IsUnderConstruction ||
             upgradeLevel >= Data.MaxUpgradeLevel)
         {
@@ -215,7 +162,18 @@ public class ProductionBuilding : Building, IJsonSaveable
 
         int cost = GetNextUpgradeCost();
 
-        if (cost <= 0 || !playerResources.TrySpend(ResourceType.Metal, cost))
+        return cost > 0 &&
+               resources.HasEnough(ResourceType.Metal, cost);
+    }
+
+    public bool TryUpgrade(PlayerResources playerResources)
+    {
+        if (!CanUpgrade(playerResources))
+            return false;
+
+        int cost = GetNextUpgradeCost();
+
+        if (!playerResources.TrySpend(ResourceType.Metal, cost))
             return false;
 
         upgradeLevel++;
@@ -228,6 +186,82 @@ public class ProductionBuilding : Building, IJsonSaveable
             return 0f;
 
         return Data.ProductionInterval *
-               Mathf.Pow(Data.ProductionIntervalMultiplierPerLevel, upgradeLevel);
+               Mathf.Pow(
+                   Data.ProductionIntervalMultiplierPerLevel,
+                   upgradeLevel
+               );
+    }
+
+    public string CaptureState()
+    {
+        ProductionBuildingSaveData saveData =
+            new ProductionBuildingSaveData
+            {
+                type = Data.Type,
+                gridX = gridPosition.x,
+                gridY = gridPosition.y,
+                constructionTimer = constructionTimer,
+                productionTimer = productionTimer,
+                isUnderConstruction = IsUnderConstruction,
+                upgradeLevel = upgradeLevel
+            };
+
+        return JsonUtility.ToJson(saveData);
+    }
+
+    public void RestoreState(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            Debug.LogWarning("Building save data is empty.");
+            return;
+        }
+
+        if (Data == null)
+        {
+            Debug.LogError("Initialize the building before restoring its state.");
+            return;
+        }
+
+        ProductionBuildingSaveData saveData;
+
+        try
+        {
+            saveData =
+                JsonUtility.FromJson<ProductionBuildingSaveData>(json);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError($"Could not load building data: {exception.Message}");
+            return;
+        }
+
+        if (saveData == null)
+        {
+            Debug.LogError("Building save data could not be read.");
+            return;
+        }
+
+        upgradeLevel = Mathf.Clamp(
+            saveData.upgradeLevel,
+            0,
+            Data.MaxUpgradeLevel
+        );
+
+        gridPosition = new Vector2Int(saveData.gridX, saveData.gridY);
+        constructionTimer = Mathf.Max(0f, saveData.constructionTimer);
+        productionTimer = Mathf.Max(0f, saveData.productionTimer);
+        IsUnderConstruction = saveData.isUnderConstruction;
+
+        if (IsUnderConstruction)
+        {
+            float buildTime = Mathf.Max(Data.BuildTime, 0.01f);
+            ConstructionProgress =
+                Mathf.Clamp01(constructionTimer / buildTime);
+        }
+        else
+        {
+            ConstructionProgress = 1f;
+        }
     }
 }

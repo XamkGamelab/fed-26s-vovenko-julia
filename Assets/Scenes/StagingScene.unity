@@ -9416,6 +9416,8 @@ MonoBehaviour:
   dayNightText: {fileID: 1133238836}
   dayNightCycle: {fileID: 410087043}
   buildingInfoText: {fileID: 902092113}
+  upgradeButton: {fileID: 0}
+  upgradeButtonText: {fileID: 0}
 --- !u!1001 &1974563354
 PrefabInstance:
   m_ObjectHideFlags: 0

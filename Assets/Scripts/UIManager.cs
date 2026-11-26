@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public enum UIPanel
 {
@@ -39,6 +40,11 @@ public class UIManager : MonoBehaviour
 
     [Header("Building Info")]
     [SerializeField] private TMP_Text buildingInfoText;
+    [SerializeField] private Button upgradeButton;
+    [SerializeField] private TMP_Text upgradeButtonText;
+
+    private ProductionBuilding selectedProductionBuilding;
+    private SimulationManager simulationManager;
 
     private string selectedBuildingHint = string.Empty;
     private Coroutine playerMessageCoroutine;
@@ -50,6 +56,10 @@ public class UIManager : MonoBehaviour
         GameEventSystem.OnBuildingSelected += HandleBuildingSelected;
         GameEventSystem.OnPlayerMessage += HandlePlayerMessage;
         GameEventSystem.OnBuildingDataSelected += HandleBuildingDataSelected;
+        GameEventSystem.OnProductionBuildingSelected += HandleProductionBuildingSelected;
+
+        if (upgradeButton != null)
+            upgradeButton.onClick.AddListener(UpgradeSelectedBuilding);
     }
     private void OnDisable()
     {
@@ -58,6 +68,10 @@ public class UIManager : MonoBehaviour
         GameEventSystem.OnBuildingSelected -= HandleBuildingSelected;
         GameEventSystem.OnPlayerMessage -= HandlePlayerMessage;
         GameEventSystem.OnBuildingDataSelected -= HandleBuildingDataSelected;
+        GameEventSystem.OnProductionBuildingSelected -= HandleProductionBuildingSelected;
+
+        if (upgradeButton != null)
+            upgradeButton.onClick.RemoveListener(UpgradeSelectedBuilding);
     }
 
 
@@ -80,6 +94,8 @@ public class UIManager : MonoBehaviour
                     metalText.text = $"Metal: {amount}";
                 break;
         }
+
+        RefreshUpgradePanel();
     }
 
     private void HandleGameStateChanged(GameState newState)
@@ -234,6 +250,88 @@ public class UIManager : MonoBehaviour
             $"Produces: {data.ProductionAmount} {data.ProducedResource} " +
             $"every {data.ProductionInterval:0.##} sec\n" +
             "Schedule: day only; pauses at night.";
+    }
+
+    private void HandleProductionBuildingSelected(ProductionBuilding building)
+    {
+        selectedProductionBuilding = building;
+        RefreshUpgradePanel();
+    }
+
+    private void UpgradeSelectedBuilding()
+    {
+        if (selectedProductionBuilding == null)
+            return;
+
+        if (simulationManager == null)
+            simulationManager = FindAnyObjectByType<SimulationManager>();
+
+        if (simulationManager == null || simulationManager.Resources == null)
+        {
+            GameEventSystem.PlayerMessage("Could not access player resources.");
+            return;
+        }
+
+        if (!selectedProductionBuilding.TryUpgrade(simulationManager.Resources))
+        {
+            GameEventSystem.PlayerMessage("Not enough metal or building cannot be upgraded.");
+            RefreshUpgradePanel();
+            return;
+        }
+
+        GameEventSystem.PlayerMessage(
+            $"{selectedProductionBuilding.Data.Type} upgraded to level " +
+            $"{selectedProductionBuilding.UpgradeLevel}."
+        );
+
+        RefreshUpgradePanel();
+    }
+
+    private void RefreshUpgradePanel()
+    {
+        if (upgradeButton == null)
+            return;
+
+        bool hasBuilding =
+            selectedProductionBuilding != null &&
+            selectedProductionBuilding.Data != null;
+
+        if (!hasBuilding)
+        {
+            upgradeButton.gameObject.SetActive(false);
+            return;
+        }
+
+        BuildingData data = selectedProductionBuilding.Data;
+        int cost = selectedProductionBuilding.GetNextUpgradeCost();
+
+        bool canUpgrade =
+            !selectedProductionBuilding.IsUnderConstruction &&
+            selectedProductionBuilding.UpgradeLevel < data.MaxUpgradeLevel;
+
+        upgradeButton.gameObject.SetActive(canUpgrade);
+
+        if (canUpgrade && upgradeButtonText != null)
+            upgradeButtonText.text = $"Upgrade — {cost} Metal";
+
+        if (buildingInfoText != null)
+        {
+            float interval = data.ProductionInterval *
+                Mathf.Pow(
+                    data.ProductionIntervalMultiplierPerLevel,
+                    selectedProductionBuilding.UpgradeLevel
+                );
+
+            buildingInfoText.text =
+                $"{data.Type}\n" +
+                $"Upgrade level: {selectedProductionBuilding.UpgradeLevel}/" +
+                $"{data.MaxUpgradeLevel}\n" +
+                $"Produces: {data.ProductionAmount} {data.ProducedResource} " +
+                $"every {interval:0.##} sec\n" +
+                (canUpgrade
+                    ? $"Next upgrade: {cost} Metal"
+                    : "Maximum upgrade level reached.");
+        }
     }
 
 }
